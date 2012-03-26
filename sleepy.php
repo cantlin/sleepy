@@ -2,7 +2,9 @@
 
 namespace Sleepy;
 
-define('BASE_DIR', 'sleepy');
+if(!is_defined('SLEEPY_BASE_DIR')) {
+	define('SLEEPY_BASE_DIR', 'sleepy');
+}
 
 class DispatchException extends \Exception {}
 class NotImplementedException extends \Exception {}
@@ -31,7 +33,7 @@ class Request extends Singleton {
 
 		$uri_parts = explode('/', $uri);
 		foreach($uri_parts as $k => $part) {
-			if(empty($part) || $part == BASE_DIR) {
+			if(empty($part) || $part == SLEEPY_BASE_DIR) {
 				unset($uri_parts[$k]);
 			}
 		}
