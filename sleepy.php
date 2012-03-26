@@ -2,7 +2,7 @@
 
 namespace Sleepy;
 
-if(!is_defined('SLEEPY_BASE_DIR')) {
+if(!defined('SLEEPY_BASE_DIR')) {
 	define('SLEEPY_BASE_DIR', 'sleepy');
 }
 
