@@ -2,8 +2,9 @@
 
 namespace Sleepy;
 
-if(!defined('SLEEPY_BASE_DIR')) {
-	define('SLEEPY_BASE_DIR', 'sleepy');
+class Conf {
+	public static $base_dir = 'sleepy';
+	public static $collection_aliases = [];
 }
 
 class DispatchException extends \Exception {}
@@ -33,7 +34,7 @@ class Request extends Singleton {
 
 		$uri_parts = explode('/', $uri);
 		foreach($uri_parts as $k => $part) {
-			if(empty($part) || $part == SLEEPY_BASE_DIR) {
+			if(empty($part) || $part == Conf::$base_dir) {
 				unset($uri_parts[$k]);
 			}
 		}
@@ -150,10 +151,9 @@ class Dispatcher {
 					 * collection, e.g. FooController::getMany().
 					 */
 					$method = 'getMany';
-					if(defined(SLEEPY_COLLECTION_ALIASES) && isset(SLEEPY_COLLECTION_ALIASES[$class]) {
-						$class = SLEEPY_COLLECTION_ALIASES[$class];
+					if(isset(Conf::$collection_aliases[$class])) {
+						$class = Conf::$collection_aliases[$class];
 					} else {
-						/* Remove trailing 's' if present */
 						if(substr($class, -1) == 's') {
 							$class = substr($class, 0, -1);
 						}
@@ -191,17 +191,7 @@ class Dispatcher {
 		$fq_class_name = "Sleepy\\Controllers\\" . $class . "Controller";
 
 		if(!class_exists($fq_class_name)) {
-			if(defined(SLEEPY_CONTROLLER_ALIASES)) {
-				if(isset(SLEEPY_CONTROLLER_ALIASES[$class])) {
-					$fq_class_name = "Sleepy\\Controllers\\" . $class . "Controller";
-
-					if(!class_exists($fq_class_name)) {
-						throw new DispatchException("'" . $class . "Controller' is not defined (aliased).");
-					}
-				}
-			} else {
-				throw new DispatchException("'" . $class . "Controller' is not defined.");
-			}
+			throw new DispatchException("'" . $class . "Controller' is not defined.");
 		}
 
 		if(!method_exists($fq_class_name, $method)) {
