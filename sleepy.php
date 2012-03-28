@@ -141,7 +141,7 @@ class Dispatcher {
 	static function dispatch()	{
 		$request = \Sleepy\Request::getInstance();
  		$uri_parts = $request->uri;
-		$class = ucfirst(array_shift($uri_parts));
+		$class = array_shift($uri_parts);
 
 		switch($request->http_method) {
 			case 'GET':
@@ -188,14 +188,15 @@ class Dispatcher {
 
 		}
 
+		$class = ucfirst($class);
 		$fq_class_name = "Sleepy\\Controllers\\" . $class . "Controller";
 
 		if(!class_exists($fq_class_name)) {
-			throw new DispatchException("'" . $class . "Controller' is not defined.");
+			throw new DispatchException($class . "Controller is not defined.");
 		}
 
 		if(!method_exists($fq_class_name, $method)) {
-			throw new DispatchException("'" . $class . "Controller does not implement '$method'");
+			throw new DispatchException($class . "Controller does not implement `$method`");
 		}
 
 		$params = isset($id) ? array_merge($request->params, ['id' => $id]) : $request->params;
@@ -215,7 +216,7 @@ class Dispatcher {
 		foreach($class::$before as $callback_method => $triggers) {
 			if((is_bool($triggers) && $triggers) || in_array($action, $triggers)) {
 				if(!method_exists($class, $callback_method)) {
-					throw new DispatchException("'$class' does not define method '$callback_method'");
+					throw new DispatchException("$class does not define method `$callback_method`");
 				}
 				$result = call_user_func(array($class, $callback_method), $params);
 				if(!$result && !is_null($result)) {
