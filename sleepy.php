@@ -284,7 +284,7 @@ function render($payload, $status_code = 200) {
 	$response = \Sleepy\Response::getInstance();
 	$response->status = $status_code;
 	$response->body = empty($body) ? \Sleepy\Response::$status_messages[$status_code] : $body;
-	$response->format = $format;
+	$response->format = 'json';
 
 	return true;
 }
