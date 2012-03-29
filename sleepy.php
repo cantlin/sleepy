@@ -253,55 +253,32 @@ interface RestInterface {
 
 class BaseController {}
 
-function render($payload, $status_code = 200, $format = 'json') {
+function render($payload, $status_code = 200) {
 	$body = '';
 
+	if(is_array($payload)) {
+		$body = json_encode($payload);
+	}
+
 	if(is_object($payload)) {
-		/* 
-		 * Passed objects are expected to define one of:
-		 * to_format, toFORMAT or exportTo(FORMAT);
-		 */
-		$render_methods = [
-			'to_' . $format,
-			'to' . strtoupper($format),
-			['exportTo', strtoupper($format)]
-		];
-
-		$undefined_methods = 0;
-		foreach($render_methods as $render_method) {
-			$method = is_array($render_method) ? $render_method[0] : $render_method;
-			$args   = is_array($render_method) ? $render_method[1] : [];
-
-			if(method_exists($payload, $method)) {
-				try {
-					$body = call_user_func([$payload, $method], $args);
-				} catch(\Exception $e) {
-					throw new \Sleepy\NotImplementedException(get_class($payload) . " cannot export to '$format'.");
+		if($payload instanceof \ArrayObject) {
+			$arr = [];
+			foreach($payload as $item) {
+				if(is_object($item)) {
+					$arr[] = method_exists($item, 'export') ? $item->export(true) : $item->toArray();
+				} else {
+					$arr[] = $item;
 				}
-				break;
 			}
-
-			$undefined_methods++;
-		}
-
-		if(count($undefined_methods) == count($render_methods)) {
-			throw new \Sleepy\NotImplementedException("No understood render methods defined for format '$format' in " . get_class($payload));
+			$body = json_encode($arr);
+		} else {
+			$export = method_exists($payload, 'export') ? $payload->export() : $payload->toArray();
+			$body   = json_encode($export);
 		}
 	}
 
 	if(is_string($payload)) {
 		$body = $payload;
-	}
-
-	if(is_array($payload)) {
-		switch($format) {
-			case 'json':
-				$body = json_encode($payload);
-				break;
-			default:
-				// throw new \Sleepy\NotImplementedException("Format '" . $format . "' unsupported.");
-				$body = implode('', $payload);
-		}
 	}
 
 	$response = \Sleepy\Response::getInstance();
