@@ -48,7 +48,7 @@ class PropelBaseController extends BaseController implements RestInterface {
 		 *
 		 *   Returns:
 		 *       \Post
-     	*/
+		*/
 
 		return "\\" . str_replace('Controller', '', end(explode("\\", get_called_class())));
 	}
