@@ -57,11 +57,17 @@ class Request extends Singleton {
 		$this->format = 'json';
 
 		$this->http_method = $_SERVER['REQUEST_METHOD'];
-		$this->headers = apache_request_headers();
+		foreach(apache_request_headers() as $key => $value) {
+			$this->headers[strtolower($key)] = $value;
+		}
 		$this->raw_uri = $_SERVER['REQUEST_URI'];
 		$this->uri = array_values($uri_parts);
 		parse_str($query_string, $this->params);
 		$this->params = array_merge($this->params, $_POST);
+	}
+
+	public function getHeader($key) {
+		return isset($this->headers[strtolower($key)]) ? $this->headers[strtolower($key)] : false;
 	}
 }
 
