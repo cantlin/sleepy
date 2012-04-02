@@ -64,6 +64,9 @@ class Request extends Singleton {
 		$this->uri = array_values($uri_parts);
 		parse_str($query_string, $this->params);
 		$this->params = array_merge($this->params, $_POST);
+		if(!empty($_FILES)) {
+			$this->params['files'] = $_FILES;
+		}
 	}
 
 	public function getHeader($key) {
