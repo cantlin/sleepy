@@ -92,7 +92,7 @@ class Response extends Singleton {
 			case 'html':
 				$content_type = 'text/html';
 		}
-		header('Content-Type: ' . $content_type);
+		header('Content-Type: ' . $content_type . '; charset=utf-8');
 
 		echo $response->body;
 	}
