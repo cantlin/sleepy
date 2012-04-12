@@ -274,7 +274,7 @@ function render($payload, $status_code = 200) {
 			$arr = [];
 			foreach($payload as $item) {
 				if(is_object($item)) {
-					$arr[] = method_exists($item, 'export') ? $item->export(true) : $item->toArray();
+					$arr[] = method_exists($item, 'export') ? $item->export('stub') : $item->toArray();
 				} else {
 					$arr[] = $item;
 				}
