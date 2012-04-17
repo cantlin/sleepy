@@ -179,7 +179,15 @@ class Dispatcher {
 				break;
 
 			case 'POST':
-				$method = 'create';
+				if(isset($_POST['_method']) && $_POST['_method'] == 'PUT') {
+					$method = 'update';
+					unset($_POST['_method']);
+					if(!$id = array_shift($uri_parts)) {
+						throw new DispatchException('No resource identifier supplied.');
+					}	
+				} else {
+					$method = 'create';
+				}
 				break;
 
 			case 'PUT':
