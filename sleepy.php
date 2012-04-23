@@ -179,7 +179,7 @@ class Dispatcher {
 				break;
 
 			case 'POST':
-				if(isset($_POST['_method']) && $_POST['_method'] == 'PUT') {
+				if(isset($_POST['_method']) && $_POST['_method'] == 'PUT' || $request->getHeader('X-Sleepy-Request-Method') == 'PUT') {
 					$method = 'update';
 					unset($_POST['_method']);
 					if(!$id = array_shift($uri_parts)) {
