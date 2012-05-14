@@ -205,7 +205,11 @@ class Dispatcher {
 
 		}
 
-		$class = ucfirst($class);
+	    $class = preg_replace_callback('/_([a-z])/', function($match) {
+	    	return strtoupper($match[1]);
+	    }, $class);
+	    $class = ucfirst($class);
+
 		$fq_class_name = "Sleepy\\Controllers\\" . $class . "Controller";
 
 		if(!class_exists($fq_class_name)) {
